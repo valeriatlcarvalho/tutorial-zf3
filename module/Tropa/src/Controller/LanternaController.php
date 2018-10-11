@@ -4,21 +4,23 @@ namespace Tropa\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
-use Tropa\Form\Setor as SetorForm;
-use Tropa\Model\Setor;
+use Tropa\Form\Lanterna as LanternaForm;
+use Tropa\Model\Lanterna;
+use Zend\Session\Storage\SessionArrayStorage;
+use Zend\I18n\Translator\Resources;
 use Zend\Mvc\I18n\Translator as MvcTranslator;
 use Zend\Validator\AbstractValidator;
 use Zend\I18n\Translator\Translator;
-use Zend\I18n\Translator\Resources;
 
-class SetorController extends AbstractActionController
+class LanternaController extends AbstractActionController
 {
-
     private $table;
-
-    public function __construct($table, $sessionManager)
+    private $parentTable;
+    
+    public function __construct($table, $parentTable, $sessionManager)
     {
         $this->table = $table;
+        $this->parentTable = $parentTable;
         $sessionManager->start();
     }
 
@@ -37,20 +39,22 @@ class SetorController extends AbstractActionController
     public function editAction()
     {
         $codigo = $this->params()->fromRoute('key', null);
-        $setor = $this->table->getModel($codigo);
-        $form = new SetorForm();
+        $lanterna = $this->table->getModel($codigo);
+        $form = new LanternaForm('lanterna',['table' => $this->parentTable]);
         $form->get('submit')->setValue(
             empty($codigo) ? 'Cadastrar' : 'Alterar'
         );
         $sessionStorage = new SessionArrayStorage();
         if (isset($sessionStorage->model)){
-            $setor->exchangeArray($sessionStorage->model->toArray());
+            $lanterna->exchangeArray($sessionStorage->model->toArray());
             unset($sessionStorage->model);
-            $form->setInputFilter($setor->getInputFilter());
+            $form->setInputFilter($lanterna->getInputFilter());
             $this->initValidatorTranslator();
+            $form->bind($lanterna);
+            $form->isValid();
+        } else {
+            $form->bind($lanterna);
         }
-        $form->bind($setor);
-        $form->isValid();
         return [
             'form' => $form,
             'title' => empty($codigo) ? 'Incluir' : 'Alterar'
@@ -64,33 +68,25 @@ class SetorController extends AbstractActionController
     {
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $form = new SetorForm();
-            $setor = new Setor();
-            $form->setInputFilter($setor->getInputFilter());
-            $form->setData($request->getPost());
-
-            if (!$form->isValid()) {
+            $form = new LanternaForm('lanterna',['table'=>$this->parentTable]);
+            $lanterna = new Lanterna();
+            $form->setInputFilter($lanterna->getInputFilter());
+            $post = $request->getPost();
+            $form->setData($post);
+            if (! $form->isValid()) {
                 $sessionStorage = new SessionArrayStorage();
                 $sessionStorage->model = $post;
-                return $this->redirect()->toRoute(
-                    'tropa',
-                    [
-                        'action'=>'edit',
-                        'controller'=>'setor'
-                    ]
-                );
-                $setor->exchangeArray($form->getData());
-                $this->table->saveModel($setor);
+                return $this->redirect()->toRoute('tropa', [
+                    'action' => 'edit',
+                    'controller' => 'lanterna'
+                ]);
             }
+            $lanterna->exchangeArray($form->getData());
+            $this->table->saveModel($lanterna);
         }
-
-        return $this->redirect()->toRoute(
-            'tropa',
-            [
-                'controller' => 'setor',
-                'action' => 'index'
-            ]
-        );
+        return $this->redirect()->toRoute('tropa', [
+            'controller' => 'lanterna'
+        ]);
     }
 
     /**
@@ -100,13 +96,9 @@ class SetorController extends AbstractActionController
     {
         $codigo = $this->params()->fromRoute('key', null);
         $this->table->deleteModel($codigo);
-
         return $this->redirect()->toRoute(
             'tropa',
-            [
-                'controller' => 'setor',
-                'action' => 'index'
-            ]
+            ['controller' => 'lanterna']
         );
     }
 

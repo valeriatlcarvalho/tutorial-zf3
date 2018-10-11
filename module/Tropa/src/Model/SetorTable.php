@@ -32,7 +32,7 @@ class SetorTable
      * 
      * @return ResultInterface
      */
-    public function fecthAll()
+    public function fetchAll()
     {
         $resultSet = $this->tableGateway->select();
         return $resultSet;
