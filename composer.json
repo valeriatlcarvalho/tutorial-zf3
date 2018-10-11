@@ -16,8 +16,10 @@
         "zendframework/zend-component-installer": "^1.0 || ^0.7 || ^1.0.0-dev@dev",
         "zendframework/zend-db": "^2.8.2",
         "zendframework/zend-form": "^2.9.2",
+        "zendframework/zend-i18n-resources": "^2.5.2",
         "zendframework/zend-mvc": "^3.0.1",
         "zendframework/zend-mvc-i18n": "^1.0.0",
+        "zendframework/zend-session": "^2.7.3",
         "zfcampus/zf-development-mode": "^3.0"
     },
     "autoload": {
@@ -28,7 +30,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ApplicationTest\\": "module/Application/test/"
+            "ApplicationTest\\": "module/Application/test/",
+            "Tropa\\": "module/Tropa/src/"
         }
     },
     "extra": [],
@@ -41,7 +44,7 @@
         "post-create-project-cmd": [
             "@development-enable"
         ],
-        "serve": "php -S 0.0.0.0:8080 -t public public/index.php",
+        "serve": "php -S 0.0.0.0:8000 -t public public/index.php",
         "test": "phpunit"
     }
 }

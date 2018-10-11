@@ -1,4 +1,6 @@
 <?php
+    $this->headScript()->prependFile($this->basePath() . '/js/delete.js', 'text/javascript');
+
     $title = 'Setores';
     $this->headTitle($title);
 ?>
@@ -32,13 +34,13 @@
                         'key' => $model->codigo
                     )
                 )?>">Editar</a>
-                <a href="<?=$this->url('tropa',
+                <button class="delete" url="<?=$this->url('tropa',
                     array(
                         'action'=>'delete',
                         'controller'=>'setor',
                         'key' => $model->codigo
                     )
-                )?>">Remover</a>
+                )?>">Remover</button>
             </td>
         </tr>
     <?php endforeach ?>

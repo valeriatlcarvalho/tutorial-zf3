@@ -1,5 +1,5 @@
 <?php
-    $title = 'Incluir o setor';
+    $title = $this->title . ' o setor';
     $this->headTitle($title);
 ?>
 <h1><?=$this->escapeHtml($title)?></h1>
@@ -13,8 +13,18 @@
         ]));
     $form->prepare();
     echo $this->form()->openTag($form);
-    /* echo $this->formRow($form->get('codigo'));
-    echo $this->formRow($form->get('nome'));
-    echo $this->formSubmit($form->get('submit')); */
+
+    /**
+     * Forma de ordenar os campos
+     * 
+     * echo $this->formRow($form->get('codigo'));
+     * echo $this->formRow($form->get('nome'));
+     * echo $this->formSubmit($form->get('submit'));
+     */
+
+    /**
+     * Adiciona os campos na ordem que foram criados
+     */
     echo $this->formcollection($form);
+
     echo $this->form()->closeTag();

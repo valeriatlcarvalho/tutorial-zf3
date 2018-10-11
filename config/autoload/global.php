@@ -12,12 +12,20 @@
  */
 
 return [
+    /**
+     * Mysql config
+     * 
+     * 'db' => [
+     *    'driver' => 'Pdo',
+     *    'dsn' => 'mysql:dbname=corps1;hostname=localhost',
+     *    'driver_options' => [
+     *        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
+     *    ],
+     * ],
+     */
     'db' => [
         'driver' => 'Pdo',
-        'dsn' => 'mysql:dbname=c_vlucht_test;hostname=ck004.ck',
-        'driver_options' => [
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''
-        ],
+        'dsn' => sprintf('sqlite:%s/data/database.db', realpath(getcwd())),
     ],
     'service_manager' => [
         'factories' => [

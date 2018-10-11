@@ -9,10 +9,14 @@ namespace Tropa;
 
 use Zend\Router\Http\Segment;
 use Zend\ServiceManager\Factory\InvokableFactory;
-use Tropa\Model\SetorTable;
 use Zend\Db\ResultSet\ResultSet;
-use Tropa\Model\Setor;
 use Zend\Db\TableGateway\TableGateway;
+use Zend\Session\SessionManager;
+
+use Tropa\Model\Lanterna;
+use Tropa\Model\LanternaTable;
+use Tropa\Model\Setor;
+use Tropa\Model\SetorTable;
 
 return [
     'router' => [
@@ -20,10 +24,10 @@ return [
             'tropa' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route'    => '/tropa[/:controller[/:action]]',
+                    'route'    => '/tropa[/:controller[/:action[/:key]]]',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
+                        'action' => 'index',
                     ],
                 ],
             ],
@@ -37,7 +41,8 @@ return [
             Controller\IndexController::class => InvokableFactory::class,
             Controller\SetorController::class => function($sm) {
                 $table = $sm->get(SetorTable::class);
-                return new Controller\SetorController($table);
+                $sessionManager = new SessionManager();
+                return new Controller\SetorController($table, $sessionManager);
             },
         ],
     ],
@@ -59,6 +64,18 @@ return [
     ],
     'service_manager' => [
         'factories' => [
+            LanternaTable::class => function($sm) {
+                $tableGateway = $sm->get('LanternaTableGateway');
+                $table = new LanternaTable($tableGateway);
+                return $table;
+            },
+            'LanternaTableGateway' => function ($sm) {
+                $dbAdapter = $sm->get('Zend\Db\Adapter');
+                $resultSetPrototype = new ResultSet();
+                $resultSetPrototype->setArrayObjectPrototype(
+                new Lanterna());
+                return new TableGateway('lanterna', $dbAdapter, null, $resultSetPrototype);
+            },
             SetorTable::class => function($sm) {
                 $tableGateway = $sm->get('SetorTableGateway');
                 $table = new SetorTable($tableGateway);
@@ -71,5 +88,5 @@ return [
                 return new TableGateway('setor', $dbAdapter, null, $resultSetPrototype);
             },
         ],
-    ]
+    ],
 ];
